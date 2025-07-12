@@ -201,6 +201,56 @@
           transform: skewX(10deg) skewY(-10deg);
         }
       }
+
+      /* Aurora Background Effect */
+      .aurora-background {
+        position: relative;
+        background-color: #000;
+        overflow: hidden;
+      }
+
+      .aurora-background::before,
+      .aurora-background::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -50%; /* Position at the bottom half */
+        width: 100vw;
+        height: 100vh;
+        background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0) 70%);
+        animation: aurora-glow 15s infinite linear;
+        mix-blend-mode: screen;
+      }
+
+      .aurora-background::after {
+        background: radial-gradient(ellipse at center, rgba(167, 139, 250, 0.3) 0%, rgba(167, 139, 250, 0) 70%);
+        animation-delay: -5s;
+        animation-duration: 20s;
+        transform: scale(1.5);
+      }
+
+      @keyframes aurora-glow {
+        0% {
+          transform: translate(0, 0) rotate(0deg) scale(1);
+          opacity: 0.5;
+        }
+        25% {
+            transform: translate(20vw, 10vh) rotate(90deg) scale(1.1);
+            opacity: 0.7;
+        }
+        50% {
+          transform: translate(0, 20vh) rotate(180deg) scale(1.2);
+          opacity: 1;
+        }
+        75% {
+            transform: translate(-20vw, 10vh) rotate(270deg) scale(1.1);
+            opacity: 0.7;
+        }
+        100% {
+          transform: translate(0, 0) rotate(360deg) scale(1);
+          opacity: 0.5;
+        }
+      }
     </style>
 
     <!-- React Libraries -->
@@ -390,7 +440,6 @@
             audioRef.current.loop = true;
             audioRef.current.play().catch(error => {
               console.error("Audio autoplay failed:", error);
-              // If autoplay fails, show a play button
               setShowPlayButton(true);
             });
           }
@@ -409,7 +458,7 @@
             }
             
             const currentSlide = slides[currentIndex];
-            const displayDuration = currentSlide.duration || 4000; // Use duration from data, fallback to 4s
+            const displayDuration = currentSlide.duration || 4000;
 
             const displayTimer = setTimeout(() => {
                 setOpacity(0);
@@ -441,7 +490,7 @@
         if (!currentSlide) return null;
 
         return (
-            <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-[1001] p-8 text-center font-roboto">
+            <div className={`fixed inset-0 flex flex-col items-center justify-center z-[1001] p-8 text-center font-roboto ${currentSlide.aurora ? 'aurora-background' : 'bg-black'}`}>
                 {showPlayButton && (
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
                         <OptionButton option="Play Audio" onClick={handlePlayAudio} />
@@ -579,22 +628,21 @@
             { text: "", duration: 2000 },
             { text: "But relieved by most", duration: 3000 },
             { text: "", duration: 2000 },
-            { text: "None of those regrets", duration: 2000 },
-            { text: "", duration: 2000 },
-            { text: "Was falling into you", duration: 20000, glitch: true },
-            { text: "", duration: 2000 },
-            { text: "I'm glad you came to see", duration: 15000, glitch: true },
-            { text: "", duration: 2000 },
-            { text: "Lives lived live on eternally", duration: 15000, glitch: true },
-            { text: "", duration: 2000 },
-            { text: "That's how you'll go by", duration: 15000, glitch: true },
-            { text: "", duration: 2000 },
-            { text: "Forever in my reality", duration: 15000, glitch: true },
-            { text: "", duration: 2000 },
-            { text: "because i love you so", duration: 15000, glitch: true },
-            { text: "", duration: 5000 },
+            { text: "None of those regrets", duration: 2000},
+            { text: "", duration: 2000},
+            { text: "Was falling into you", duration: 20000, glitch: true, aurora: true },
+            { text: "", duration: 2000, aurora: true },
+            { text: "I'm glad you came to see", duration: 15000, glitch: true, aurora: true },
+            { text: "", duration: 2000, aurora: true },
+            { text: "Lives lived live on eternally", duration: 15000, glitch: true, aurora: true },
+            { text: "", duration: 2000, aurora: true },
+            { text: "That's how you'll go by", duration: 15000, glitch: true, aurora: true },
+            { text: "", duration: 2000, aurora: true },
+            { text: "Forever in my reality", duration: 15000, glitch: true, aurora: true },
+            { text: "", duration: 2000, aurora: true },
+            { text: "because i love you so", duration: 15000, glitch: true, aurora: true },
         ];
-        const rageOrRollQuestionData = { id: 7, type: 'rageOrRoll', questionText: "", options: ["NGGYU", "NGLYD", "NGRA", "AHY", "DNGGITGN", "OASBARACOF", "RRRATOTL", "TWMATEKDIR", "BTWHFNLT"], rageOptions: ["NGGYU", "NGLYD", "NGRA", "AHY"], rollSequence: ["DNGGITGN", "OASBARACOF", "RRRATOTL", "TWMATEKDIR", "BTWHFNLT", "DNGGITGN"] };
+        const rageOrRollQuestionData = { id: 7, type: 'rageOrRoll', questionText: "Choose your path: Rage or Roll?", options: ["NGGYU", "NGLYD", "NGRA", "AHY", "DNGGITGN", "OASBARACOF", "RRRATOTL", "TWMATEKDIR", "BTWHFNLT"], rageOptions: ["NGGYU", "NGLYD", "NGRA", "AHY"], rollSequence: ["DNGGITGN", "OASBARACOF", "RRRATOTL", "TWMATEKDIR", "BTWHFNLT", "DNGGITGN"] };
         
         // State variables to control the application flow
         const [showContent, setShowContent] = React.useState(true);
@@ -683,7 +731,7 @@
         return (
           <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center p-4 font-inter relative">
             <div className="absolute top-4 left-1/2 -translate-x-1/2 text-2xl font-bold text-gray-800 z-20 text-center small-caps-text">
-              lizzy wizzy
+              Lizzy Wizzy
               <p className="text-base italic font-normal mt-1">i really want to stay at your house</p>
             </div>
 
